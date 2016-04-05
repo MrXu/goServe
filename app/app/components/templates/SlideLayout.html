@@ -1,0 +1,21 @@
+
+<!-- Navigation -->
+<a id="menu-toggle" class="btn btn-dark btn-lg toggle" (click)="SideMenuVisible = true"><i class="fa fa-bars"></i></a>
+
+<nav id="sidebar-wrapper" [class.active]="SideMenuVisible">
+    <ul class="sidebar-nav">
+    	<li>
+        	<a id="menu-close" class="btn btn-light btn-lg pull-right toggle" (click)="SideMenuVisible = false"><i class="fa fa-times"></i></a>
+        </li>
+        <li class="sidebar-brand">
+            <a [routerLink]="['HomeUrl']" (click)="SideMenuVisible = false">Home</a>
+        </li>
+        <li>
+            <a [routerLink]="['JoinUsUrl']" (click)="SideMenuVisible = false">Join Us</a>
+        </li>
+    </ul>
+</nav>
+
+<div id="menu-overlay" [class.active]="SideMenuVisible" (click)="SideMenuVisible = false"></div>
+
+<router-outlet></router-outlet>
