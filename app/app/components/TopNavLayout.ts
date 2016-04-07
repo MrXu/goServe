@@ -1,8 +1,9 @@
-import {Component} from "angular2/core";
+import {Component, ViewChild} from "angular2/core";
 import { RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS } from 'angular2/router';
 import {NgClass} from 'angular2/common'
 import {HomePage} from './HomePage';
 import {JoinPage} from './JoinPage';
+import {LoginPanel} from './LoginPanel';
 import {EmitterService} from '../service/EventEmitterService'
 
 
@@ -10,7 +11,7 @@ import {EmitterService} from '../service/EventEmitterService'
     selector: 'top-nav-layout',
     templateUrl: 'app/components/templates/TopNavLayout.html',
     styleUrls:['css/top-nav-layout.css'],
-	directives: [ROUTER_DIRECTIVES,NgClass],
+	directives: [ROUTER_DIRECTIVES, NgClass,LoginPanel],
 	providers: [
 	  ROUTER_PROVIDERS
 	]
@@ -23,8 +24,11 @@ import {EmitterService} from '../service/EventEmitterService'
 
 export class TopNavLayout { 
 
+	// child components
+
+
 	// ui states
-	openHowItWorks = false
+	openHowItWorks = false;
 
 	// event emitter
 	emitter = EmitterService.get("Open_How_It_Works");
@@ -42,6 +46,7 @@ export class TopNavLayout {
 	closeHowItWorks(){
 		this.openHowItWorks = false;
 	}
+
 
 
 }
