@@ -1,15 +1,22 @@
-import {Component} from "angular2/core"
+import {Component} from "angular2/core";
+import {AuthServices} from "../service/AuthServices";
 
 @Component({
 	selector: 'login-panel',
-	templateUrl: 'app/components/templates/LoginPanel.html'
+	templateUrl: 'app/components/templates/LoginPanel.html',
+	providers:[AuthServices]
 })
 
 export class LoginPanel {
 	isPanelVisible = false;
+	
+	// states
+	email: String;
+	password: String;
 
-	constructor() {
-
+	constructor(private _authService:AuthServices) {
+		this.email = "";
+		this.password = "";
 	}
 
 	showPanel() {
@@ -18,6 +25,13 @@ export class LoginPanel {
 
 	hidePanel(){
 		this.isPanelVisible = false;
+	}
+
+	loginWithEmail(){
+		if(!this.email || !this.password){
+			return;
+		}
+		this._authService.loginWithEmail(this.email, this.password);
 	}
 
 }

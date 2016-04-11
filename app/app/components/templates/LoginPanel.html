@@ -8,9 +8,9 @@
 			Login with Facebook
 		</button>
 		<hr>
-		<input type="email" class="form-control" placeholder="email" />
-		<input type="password" class="form-control" placeholder="password" />
-		<button class="btn btn-success form-control">Login</button>
+		<input type="email" class="form-control" placeholder="email" [(ngModel)]="email"/>
+		<input type="password" class="form-control" placeholder="password" [(ngModel)]="password"/>
+		<button class="btn btn-success form-control" (click)="loginWithEmail()">Login</button>
 	</div>
 </div>
 </div>
