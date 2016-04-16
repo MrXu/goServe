@@ -44,9 +44,17 @@ func main() {
 	/*
 		api requiring authentication
 	*/
-	private := r.Group("/api/auth")
+	private := r.Group("/api/private")
 	private.Use(auth.TokenAuthMiddleware)
-	private.GET("/action", controller.TestJsonController)
+	private.GET("/example", controller.TestJsonController)
+
+
+	/*
+		api not requiring authentication
+	*/
+	public := r.Group("/api/public")
+	public.GET("/example", controller.TestController)
+
 
 
 	r.Run(":8080") // listen and serve on 0.0.0.0:8080

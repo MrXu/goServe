@@ -7,7 +7,9 @@ import (
 )
 
 func TestController(c *gin.Context) {
-	c.String(200, "from test controller/n")
+	c.JSON(http.StatusOK, gin.H{
+		"greeting":"hello go",	
+	})
 }
 
 func TestJsonController(c *gin.Context) {
@@ -17,8 +19,7 @@ func TestJsonController(c *gin.Context) {
 	}
 	user := userAccount.(*auth.UserAccount)
 	c.JSON(200, gin.H{
-		"name":   "jason",
-		"action": "work",
+		"greeting":  "hello world",
 		"email":user.Id,
 	})
 }
