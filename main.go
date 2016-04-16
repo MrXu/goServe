@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
-	"gorgeousServer/controller"
-	"gorgeousServer/auth"
-	"gorgeousServer/mongodb"
+	"goServe/controller"
+	"goServe/auth"
+	"goServe/mongodb"
 )
 
 func init() {

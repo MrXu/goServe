@@ -3,7 +3,7 @@ package auth
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"gorgeousServer/mongodb"
+	"goServe/mongodb"
 	"gopkg.in/mgo.v2"
 	"time"
 )

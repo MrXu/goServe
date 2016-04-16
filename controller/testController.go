@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"gorgeousServer/auth"
+	"goServe/auth"
 )
 
 func TestController(c *gin.Context) {
