@@ -6,6 +6,8 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"golang.org/x/crypto/bcrypt"
+	"time"
+	"golang.org/x/crypto/rand"
 )
 
 func getUserByEmail(userId string, c *gin.Context) (*UserAccount, error){
@@ -48,6 +50,23 @@ func validatePassword(password string) bool{
 		return false
 	}
 	return true
+}
+
+func generateRandomToken() []byte{
+	b := make([]byte, 24)
+	rand.Read(b)
+	return b
+}
+
+func sendRegistrationConfirmationEmail(email string, userId string, c *gin.Context){
+	contex := c.Copy()
+	randomToken := generateRandomToken()
+	db := context.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
+	err := db.C(CollectionEmailConfirmation).Insert(&emailConfirmation{
+		UserId:signUpJson.Email,
+		Token:randomToken,
+		Used: false,
+		ExpireAt:time.Now()})
 }
 
 func abortWithError(c *gin.Context, code int, message string) {

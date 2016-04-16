@@ -20,6 +20,7 @@ type UserAccount struct{
 	SocialAuth  	SocialAuth
 	CreatedOn		int64				
 	UpdatedOn		int64
+	Active			bool 
 }
 
 type UserProfile struct{

@@ -26,27 +26,23 @@ func LoginUserWithEmail(c *gin.Context){
 		var user *UserAccount
 		user, err := getUserByEmail(loginJson.Email, c)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"authenticated":"false"})
+			abortWithError(c, http.StatusUnauthorized, "authentication fail")
 		}
 
 		passwordValidErr := safeComparePassword(user.Password, []byte(loginJson.Password))
 		if passwordValidErr != nil{
-			c.JSON(http.StatusUnauthorized, gin.H{"authenticated":"false"})	
+			abortWithError(c, http.StatusUnauthorized, "authentication fail")
 		}
 
 		tokenString, tokenErr := GenerateToken(loginJson.Email)
 
 		if tokenErr != nil{
-			c.JSON(http.StatusUnauthorized, gin.H{"authenticated":"false"})		
+			abortWithError(c, http.StatusUnauthorized, "authentication fail")	
 		}
 
 		c.JSON(http.StatusOK, gin.H{"authenticated":"true","token":tokenString})
 
-		// if loginJson.Email == "xw" && loginJson.Password =="xw"{
-		// 	c.JSON(http.StatusOK, gin.H{"authenticated":"true"})
-		// }else{
-		// 	c.JSON(http.StatusUnauthorized, gin.H{"authenticated":"false"})
-		// }
+		
 	}else{
 		c.JSON(http.StatusUnauthorized, gin.H{"error":"unauthorized"})
 	}
@@ -60,16 +56,17 @@ func SignUpWithEmail(c *gin.Context) {
 		if validateEmail(signUpJson.Email, c) && validatePassword(signUpJson.Password){
 			hash, hasherr := hashPassword(signUpJson.Password)
 			if hasherr != nil{
-				c.JSON(http.StatusBadRequest, gin.H{"error":"sign up fail"})
+				abortWithError(c, http.StatusBadRequest, "signup fail")
 			}
 			db := c.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
 			err := db.C(CollectionUserAccount).Insert(&UserAccount{
 				Id:signUpJson.Email,
 				Password:hash,
 				CreatedOn:int64(time.Now().Second()),
-				UpdatedOn:int64(time.Now().Second())})
+				UpdatedOn:int64(time.Now().Second()),
+				Active:false})
 			if err != nil{
-				c.JSON(http.StatusBadRequest, gin.H{"error":"sign up fail"})			
+				abortWithError(c, http.StatusBadRequest, "signup fail")			
 			}
 
 			// sent email
