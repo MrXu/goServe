@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"gorgeousServer/mongodb"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
@@ -36,7 +34,13 @@ func LoginUserWithEmail(c *gin.Context){
 			c.JSON(http.StatusUnauthorized, gin.H{"authenticated":"false"})	
 		}
 
-		c.JSON(http.StatusOK, gin.H{"authenticated":"true"})
+		tokenString, tokenErr := GenerateToken(loginJson.Email)
+
+		if tokenErr != nil{
+			c.JSON(http.StatusUnauthorized, gin.H{"authenticated":"false"})		
+		}
+
+		c.JSON(http.StatusOK, gin.H{"authenticated":"true","token":tokenString})
 
 		// if loginJson.Email == "xw" && loginJson.Password =="xw"{
 		// 	c.JSON(http.StatusOK, gin.H{"authenticated":"true"})
@@ -82,44 +86,3 @@ func SignUpWithEmail(c *gin.Context) {
 	}
 }
 
-func getUserByEmail(userId string, c *gin.Context) (*UserAccount, error){
-	db := c.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
-	result := &UserAccount{}
-	err := db.C(CollectionUserAccount).Find(bson.M{"_id":userId}).One(&result)
-
-	return result,err
-
-}
-
-func validateEmail(userId string, c *gin.Context) bool {
-	db := c.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
-
-	result := &UserAccount{}
-
-	err := db.C(CollectionUserAccount).Find(bson.M{"_id":userId}).One(&result)
-	if err != nil{	
-		return true
-	}else{
-		return false
-	}
-}
-
-func hashPassword(password string) ([]byte, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil{
-		return nil, err
-	}
-	return hash,nil
-}
-
-func safeComparePassword(hash []byte, password []byte) error {
-	err := bcrypt.CompareHashAndPassword(hash, password)
-	return err
-}
-
-func validatePassword(password string) bool{
-	if len(password) < 5{
-		return false
-	}
-	return true
-}

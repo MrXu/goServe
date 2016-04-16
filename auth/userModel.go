@@ -1,13 +1,16 @@
 package auth
 
+const (
+	User 			string = "user"
+)
 
 const (
 	CollectionUserAccount = "accounts"
 )
 
 const (
-	FACEBOOK 	= 	"facebook"
-	GOOGLE 		=	"google"
+	FACEBOOK 		string = 	"facebook"
+	GOOGLE 			string =	"google"
 )
 
 type UserAccount struct{

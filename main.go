@@ -35,13 +35,19 @@ func main() {
 	r.Use(mongodb.DBErrorMW)
 
 	/* 
-		api 
+		api for authentication functionalities 
 	*/
-	r.GET("/", controller.TestController)
-	r.GET("/action", controller.TestJsonController)
-	// auth api
 	r.POST("/login", auth.LoginUserWithEmail)
 	r.POST("/signup/email", auth.SignUpWithEmail)
+
+
+	/*
+		api requiring authentication
+	*/
+	private := r.Group("/api/auth")
+	private.Use(auth.TokenAuthMiddleware)
+	private.GET("/action", controller.TestJsonController)
+
 
 	r.Run(":8080") // listen and serve on 0.0.0.0:8080
 }
