@@ -24,9 +24,15 @@ type tempOpsToken struct{
 
 
 type emailConfirmation struct{
-	tempOpsToken
+	UserId 			string
+	Token 			[]byte
+	Used 			bool
+	ExpireAt 		int64
 }
 
 type passwordChange struct{
-	tempOpsToken
+	UserId 			string
+	Token 			[]byte
+	Used 			bool
+	ExpireAt 		int64
 }

@@ -9,10 +9,12 @@ import (
 	"goServe/controller"
 	"goServe/auth"
 	"goServe/mongodb"
+	"goServe/config"
 )
 
 func init() {
 	mongodb.Connect()
+	config.GetConfig()
 }
 
 func main() {

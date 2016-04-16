@@ -1,7 +1,7 @@
 {
-	"emails":[
-			{"address":"testing@gmail.com", "password":"testing"},
-			{"address":"testing@gmail.com", "password":"testing"}
+	"Emails":[
+			{"Address":"testing@gmail.com", "Password":"testing","Host":"mail.google.com"},
+			{"Address":"testing@gmail.com", "Password":"testing","Host":"mail.google.com"}
 		],
-	"jwtkey":"testing"
+	"Jwtkey":"testing"
 }

@@ -3,10 +3,14 @@ package auth
 import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"time"
+	"goServe/config"
+)
+
+var (
+	JWTKEY  	string = config.GetJwtKey()
 )
 
 const (
-	JWTKEY  	string  		= "testingkey"
 	ExpireTime 	time.Duration 	= time.Hour * 24 * 7
 	Realm		string 			= "jwt auth"
 	USERID		string 			= "userId"
