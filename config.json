@@ -1,7 +1,7 @@
 {
 	"Emails":[
-			{"Address":"testing@gmail.com", "Password":"testing","Host":"mail.google.com"},
-			{"Address":"testing@gmail.com", "Password":"testing","Host":"mail.google.com"}
+			{"Address":"testing@gmail.com", "Password":"testing","Host":"mail.google.com","Port":"465"},
+			{"Address":"testing@gmail.com", "Password":"testing","Host":"mail.google.com","Port":"465"}
 		],
 	"Jwtkey":"testing"
 }

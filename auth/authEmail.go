@@ -5,6 +5,7 @@ import (
 	"goServe/mongodb"
 	"gopkg.in/mgo.v2"
 	"time"
+	emailWorker "goServe/email"
 )
 
 
@@ -21,4 +22,9 @@ func sendRegistrationConfirmationEmail(email string, userId string, c *gin.Conte
 	if err!=nil {
 		return
 	}
+
+	go func() {
+		emailWorker.SendEmail(email,"hello email")
+	}()
+
 }

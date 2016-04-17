@@ -4,7 +4,6 @@ import (
 	"os"
 	"encoding/json"
 	"fmt"
-	"errors"
 )
 
 var (
@@ -20,10 +19,11 @@ type Email struct{
 	Address		string
 	Password	string
 	Host		string
+	Port 		string
 }
 
 func GetConfig(){
-	file,err:=os.Open("./config.json")
+	file,err:=os.Open("./config_prod.json")
 	if err != nil{
 		panic("Configuration file missing!")
 	}
@@ -45,9 +45,9 @@ func GetJwtKey() string{
 	return Config.Jwtkey
 }
 
-func GetAnEmail() (*Email, error) {
+func GetAnEmail() *Email {
 	if len(Config.Emails) < 1{
-		return nil, errors.New("No email configured")
+		return nil
 	}
-	return &(Config.Emails[0]),nil
+	return &(Config.Emails[0])
 }

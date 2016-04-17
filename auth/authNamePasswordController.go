@@ -70,10 +70,10 @@ func SignUpWithEmail(c *gin.Context) {
 			}
 
 			// sent email
-
+			sendRegistrationConfirmationEmail(signUpJson.Email,signUpJson.Email,c)
 			// login and sent back token
 
-			c.JSON(http.StatusOK, gin.H{"":""})
+			c.JSON(http.StatusOK, gin.H{"status":"sign up success"})
 		}else{
 			c.JSON(http.StatusBadRequest, gin.H{"error":"sign up fail"})	
 		}
