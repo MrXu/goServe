@@ -24,7 +24,7 @@ func sendRegistrationConfirmationEmail(email string, userId string, c *gin.Conte
 	}
 
 	go func() {
-		emailWorker.SendEmail(email,"hello email")
+		emailWorker.SendAnEmail(email,"hello email")
 	}()
 
 }

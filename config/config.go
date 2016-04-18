@@ -21,7 +21,7 @@ type Email struct{
 	Address		string
 	Password	string
 	Host		string
-	Port 		string
+	Port 		int
 }
 
 

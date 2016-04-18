@@ -18,14 +18,19 @@ func ConfigEmail() {
 	Email = email
 }
 
-func SendEmail(to string, msg string) {
-	
-	emailAuth := smtp.PlainAuth("", Email.Address, Email.Password, Email.Host)
 
-	err := smtp.SendMail(Email.Host+":"+Email.Port, emailAuth, Email.Address, []string{to}, []byte(msg))
+func SendAnEmail(to string, msg string){
+	m := gomail.NewMessage()
+	m.SetHeader("From", Email.Address)
+	m.SetHeader("To", to)
+	m.SetHeader("Subject", "Hello!")
+	m.SetBody("text/html", "Hello <b>Email</b>!")
+	//m.Attach("/home/Alex/lolcat.jpg")
 
-	if err != nil {
-		log.Println(err)
+	d := gomail.NewDialer(Email.Host, Email.Port, Email.Address, Email.Password)
+
+	// Send the email
+	if err := d.DialAndSend(m); err != nil {
+	    log.Println(err)
 	}
-
 }
