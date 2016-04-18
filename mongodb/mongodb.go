@@ -1,9 +1,10 @@
 package mongodb
 
 import (
-	"os"
+	
 	"fmt"
 	"gopkg.in/mgo.v2"
+	Config "goServe/config"
 )
 
 var (
@@ -20,7 +21,8 @@ const (
 )
 
 func Connect() {
-	uri := os.Getenv("MONGODB_URL")
+	//uri := os.Getenv("MONGODB_URL")
+	uri := Config.GetMongoDBUrl()
 	if len(uri)==0 {
 		uri = MongoDBUrl
 	}

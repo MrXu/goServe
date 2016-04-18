@@ -11,6 +11,7 @@ var (
 )
 
 type Configuration struct{
+	MongoDBUrl 	string
 	Emails		[]Email
 	Jwtkey		string
 }
@@ -50,4 +51,8 @@ func GetAnEmail() *Email {
 		return nil
 	}
 	return &(Config.Emails[0])
+}
+
+func GetMongoDBUrl() string{
+	return Config.MongoDBUrl
 }

@@ -13,8 +13,8 @@ import (
 )
 
 func init() {
-	mongodb.Connect()
 	config.GetConfig()
+	mongodb.Connect()
 }
 
 func main() {
