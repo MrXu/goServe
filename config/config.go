@@ -4,6 +4,7 @@ import (
 	"os"
 	"encoding/json"
 	"fmt"
+	"errors"
 )
 
 var (
@@ -23,8 +24,10 @@ type Email struct{
 	Port 		string
 }
 
+
+
 func GetConfig(){
-	file,err:=os.Open("./config.json")
+	file,err:=os.Open("./config_prod.json")
 	if err != nil{
 		panic("Configuration file missing!")
 	}
@@ -46,11 +49,12 @@ func GetJwtKey() string{
 	return Config.Jwtkey
 }
 
-func GetAnEmail() *Email {
+func GetAnEmail() (Email,error) {
+	var email Email
 	if len(Config.Emails) < 1{
-		return nil
+		return email,errors.New("email missing")
 	}
-	return &(Config.Emails[0])
+	return Config.Emails[0], nil
 }
 
 func GetMongoDBUrl() string{

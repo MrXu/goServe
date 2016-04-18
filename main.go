@@ -1,20 +1,20 @@
 package main
 
 import (
-
+	Config "goServe/config"
 	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
 	"goServe/controller"
 	"goServe/auth"
-	"goServe/mongodb"
-	"goServe/config"
+	Mongo "goServe/mongodb"
+	Email "goServe/email"
 )
 
 func init() {
-	config.GetConfig()
-	mongodb.Connect()
+	Config.GetConfig()
+	Email.ConfigEmail()
+	Mongo.Connect()
 }
 
 func main() {
@@ -33,8 +33,8 @@ func main() {
 	    Credentials: true,
 	    ValidateHeaders: false,
 	}))
-	r.Use(mongodb.DBConnectMW)
-	r.Use(mongodb.DBErrorMW)
+	r.Use(Mongo.DBConnectMW)
+	r.Use(Mongo.DBErrorMW)
 
 	/* 
 		api for authentication functionalities 
