@@ -1,15 +1,14 @@
 # goServe
 An api server starter kit using gin, mongodb, jwt authentication
-
-goServe is a seed project for you to kickstart your golang restful api project.
+goServe is a seed project for you to kickstart golang restful api project.
 
 ## To use
-1. get this project and put into your go src directory
-2. modify config.json to configure your app
+1. put this project into go src directory
+2. modify config.json to configure your app (mongodb url, jwt key)
 3. go run main.go
 
 ### gin
-goServe uses [Gin](https://github.com/gin-gonic/gin "gin-gonic") as the framework. Gin provides excellent middleware support and uses one of the best router.
+goServe uses [Gin](https://github.com/gin-gonic/gin "gin-gonic") as the framework. Gin provides excellent middlewares and uses httprouter for its performance.
 
 ### mongodb
 goServe uses [Mgo](https://github.com/go-mgo/mgo "mgo") as the MongoDB driver. Enjoy.
