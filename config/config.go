@@ -24,7 +24,7 @@ type Email struct{
 }
 
 func GetConfig(){
-	file,err:=os.Open("./config_prod.json")
+	file,err:=os.Open("./config.json")
 	if err != nil{
 		panic("Configuration file missing!")
 	}
