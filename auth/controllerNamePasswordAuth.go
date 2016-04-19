@@ -100,20 +100,25 @@ func ActivateAccountAfterEmailSignup(c *gin.Context) {
 
 	// err getting record
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, "invalid code")
+		abortWithError(c, http.StatusBadRequest, "fail to get code")
+		return
+	}
+
+	if result.Used{
+		abortWithError(c, http.StatusBadRequest, "code used ")	
 		return
 	}
 
 	// vcode used or vcode expire
-	if result.Used || isTimeStampExpired(result.ExpireAt){
-		abortWithError(c, http.StatusBadRequest, "invalid code")	
+	if isTimeStampExpired(result.ExpireAt){
+		abortWithError(c, http.StatusBadRequest, "code expired")	
 		return
 	}
 
 
-	updateErr := SetEmailConfirmUsed(vcode, db)
+	updateErr := RemoveEmailConfirm(vcode, db)
 	if updateErr != nil {
-		abortWithError(c, http.StatusBadRequest, "invalid code")	
+		abortWithError(c, http.StatusBadRequest, "fail to update")	
 		return
 	}
 

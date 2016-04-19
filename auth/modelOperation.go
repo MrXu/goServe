@@ -13,8 +13,8 @@ const (
 )
 
 const (
-	emailConfirmExpireTime   		time.Duration 	= time.Hour*7
-	passwordChangeExpireTime 		time.Duration 	= time.Hour*1
+	emailConfirmExpireDuration   		time.Duration 	= time.Hour*7
+	passwordChangeExpireDuration 		time.Duration 	= time.Hour*1
 )
 
 
@@ -40,6 +40,16 @@ type PasswordChange struct{
 	ExpireAt 		int64
 }
 
+func InsertEmailConfirm(userId string, db *mgo.Database) (string,error) {
+	randomToken := generateRandomUri()
+	err := db.C(CollectionEmailConfirmation).Insert(&EmailConfirmation{
+		UserId:userId,
+		Token:randomToken,
+		Used: false,
+		ExpireAt:int64(time.Now().Add(emailConfirmExpireDuration).Unix()),
+		})
+	return randomToken, err
+}
 
 func GetEmailConfirm(vcode string, db *mgo.Database) (*EmailConfirmation,error) {
 	result := &EmailConfirmation{}
@@ -52,6 +62,10 @@ func SetEmailConfirmUsed(vcode string, db *mgo.Database) error{
 	return err
 }
 
+func RemoveEmailConfirm(vcode string, db *mgo.Database) error {
+	err := db.C(CollectionEmailConfirmation).Remove(bson.M{"token":vcode})
+	return err
+}
 
 
 
