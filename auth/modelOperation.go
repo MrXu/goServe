@@ -1,6 +1,9 @@
 package auth
 
 import (
+	
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"time"
 )
 
@@ -17,22 +20,40 @@ const (
 
 type tempOpsToken struct{
 	UserId 			string
-	Token 			[]byte
+	Token 			string			`json:"token" bson:"token"`
 	Used 			bool
 	ExpireAt 		int64
 }
 
 
-type emailConfirmation struct{
+type EmailConfirmation struct{
 	UserId 			string
-	Token 			[]byte
-	Used 			bool
+	Token 			string			`json:"token" bson:"token"`
+	Used 			bool			`json:"used" bson:"used"`
 	ExpireAt 		int64
 }
 
-type passwordChange struct{
+type PasswordChange struct{
 	UserId 			string
-	Token 			[]byte
-	Used 			bool
+	Token 			string			`json:"token" bson:"token"`
+	Used 			bool			`json:"used" bson:"used"`
 	ExpireAt 		int64
 }
+
+
+func GetEmailConfirm(vcode string, db *mgo.Database) (*EmailConfirmation,error) {
+	result := &EmailConfirmation{}
+	err := db.C(CollectionEmailConfirmation).Find(bson.M{"token":vcode}).One(&result)
+	return result,err
+}
+
+func SetEmailConfirmUsed(vcode string, db *mgo.Database) error{
+	err := db.C(CollectionEmailConfirmation).Update(bson.M{"token":vcode}, bson.M{"$set":bson.M{"used":true}})
+	return err
+}
+
+
+
+
+
+

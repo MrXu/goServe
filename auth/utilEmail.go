@@ -11,9 +11,9 @@ import (
 
 func sendRegistrationConfirmationEmail(email string, userId string, c *gin.Context){
 	context := c.Copy()
-	randomToken := generateRandomToken()
+	randomToken := generateRandomUri()
 	db := context.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
-	err := db.C(CollectionEmailConfirmation).Insert(&emailConfirmation{
+	err := db.C(CollectionEmailConfirmation).Insert(&EmailConfirmation{
 		UserId:userId,
 		Token:randomToken,
 		Used: false,
@@ -24,7 +24,7 @@ func sendRegistrationConfirmationEmail(email string, userId string, c *gin.Conte
 	}
 
 	go func() {
-		emailWorker.SendAnEmail(email,"hello email")
+		emailWorker.SendAnEmail(email,randomToken)
 	}()
 
 }

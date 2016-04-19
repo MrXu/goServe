@@ -41,6 +41,7 @@ func main() {
 	*/
 	r.POST("/login", auth.LoginUserWithEmail)
 	r.POST("/signup/email", auth.SignUpWithEmail)
+	r.POST("/signup/email/verify-email", auth.ActivateAccountAfterEmailSignup)
 
 
 	/*
@@ -56,6 +57,7 @@ func main() {
 	*/
 	public := r.Group("/api/public")
 	public.GET("/example", controller.TestController)
+
 
 
 

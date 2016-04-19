@@ -5,7 +5,10 @@ import (
 	"net/http"
 	"goServe/mongodb"
 	"gopkg.in/mgo.v2"
-	"time"
+)
+
+const (
+	EmailVerifyCode  	string = "vcode"
 )
 
 type LoginCredential struct{
@@ -24,20 +27,26 @@ func LoginUserWithEmail(c *gin.Context){
 	if c.BindJSON(&loginJson) == nil {
 
 		var user *UserAccount
-		user, err := getUserByEmail(loginJson.Email, c)
+		// db access
+		db := c.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
+		user, err := GetUserByEmail(loginJson.Email, db)
+
 		if err != nil {
 			abortWithError(c, http.StatusUnauthorized, "authentication fail")
+			return
 		}
 
 		passwordValidErr := safeComparePassword(user.Password, []byte(loginJson.Password))
 		if passwordValidErr != nil{
 			abortWithError(c, http.StatusUnauthorized, "authentication fail")
+			return
 		}
 
 		tokenString, tokenErr := GenerateToken(loginJson.Email)
 
 		if tokenErr != nil{
-			abortWithError(c, http.StatusUnauthorized, "authentication fail")	
+			abortWithError(c, http.StatusUnauthorized, "authentication fail")
+			return	
 		}
 
 		c.JSON(http.StatusOK, gin.H{"authenticated":"true","token":tokenString})
@@ -54,26 +63,26 @@ func SignUpWithEmail(c *gin.Context) {
 	if c.BindJSON(&signUpJson) == nil {
 		
 		if validateEmail(signUpJson.Email, c) && validatePassword(signUpJson.Password){
-			hash, hasherr := hashPassword(signUpJson.Password)
-			if hasherr != nil{
-				abortWithError(c, http.StatusBadRequest, "signup fail")
-			}
+			// db access
 			db := c.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
-			err := db.C(CollectionUserAccount).Insert(&UserAccount{
-				Id:signUpJson.Email,
-				Password:hash,
-				CreatedOn:int64(time.Now().Second()),
-				UpdatedOn:int64(time.Now().Second()),
-				Active:false})
+			err := InsertUserAccount(signUpJson.Email, signUpJson.Password, db)
+
 			if err != nil{
 				abortWithError(c, http.StatusBadRequest, "signup fail")			
+				return
 			}
 
 			// sent email
 			sendRegistrationConfirmationEmail(signUpJson.Email,signUpJson.Email,c)
-			// login and sent back token
 
-			c.JSON(http.StatusOK, gin.H{"status":"sign up success"})
+			// login and sent back token
+			tokenString, tokenErr := GenerateToken(signUpJson.Email)
+			if tokenErr != nil{
+				abortWithError(c, http.StatusUnauthorized, "authentication fail")
+				return	
+			}
+			c.JSON(http.StatusOK, gin.H{"status":"sign up success","authenticated":"true","token":tokenString})
+
 		}else{
 			c.JSON(http.StatusBadRequest, gin.H{"error":"sign up fail"})	
 		}
@@ -81,5 +90,33 @@ func SignUpWithEmail(c *gin.Context) {
 	}else{
 		c.JSON(http.StatusBadRequest, gin.H{"error":"sign up fail"})
 	}
+}
+
+
+func ActivateAccountAfterEmailSignup(c *gin.Context) {
+	vcode := c.Query(EmailVerifyCode)
+	db := c.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
+	result,err := GetEmailConfirm(vcode,db)
+
+	// err getting record
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, "invalid code")
+		return
+	}
+
+	// vcode used or vcode expire
+	if result.Used || isTimeStampExpired(result.ExpireAt){
+		abortWithError(c, http.StatusBadRequest, "invalid code")	
+		return
+	}
+
+
+	updateErr := SetEmailConfirmUsed(vcode, db)
+	if updateErr != nil {
+		abortWithError(c, http.StatusBadRequest, "invalid code")	
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"activated":"true"})
 }
 

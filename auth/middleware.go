@@ -2,6 +2,8 @@ package auth
 
 import (
 	"net/http"
+	"goServe/mongodb"
+	"gopkg.in/mgo.v2"
 	"github.com/gin-gonic/gin"
 	jwt "github.com/dgrijalva/jwt-go"
 )
@@ -22,7 +24,8 @@ func TokenAuthMiddleware(c *gin.Context) {
 
 
 	if token.Claims[USERID] != nil{
-		user, getUserErr := getUserByEmail(token.Claims[USERID].(string),c)
+		db := c.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
+		user, getUserErr := GetUserByEmail(token.Claims[USERID].(string),db)
 		if getUserErr != nil{
 			abortWithError(c, http.StatusUnauthorized, "Invalid User Token")
 		}

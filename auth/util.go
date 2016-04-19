@@ -2,28 +2,17 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+	"github.com/dchest/uniuri"
+	"time"
 	"goServe/mongodb"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-	"golang.org/x/crypto/bcrypt"
-	"crypto/rand"
 )
 
-func getUserByEmail(userId string, c *gin.Context) (*UserAccount, error){
-	db := c.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
-	result := &UserAccount{}
-	err := db.C(CollectionUserAccount).Find(bson.M{"_id":userId}).One(&result)
-
-	return result,err
-
-}
 
 func validateEmail(userId string, c *gin.Context) bool {
 	db := c.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
-
-	result := &UserAccount{}
-
-	err := db.C(CollectionUserAccount).Find(bson.M{"_id":userId}).One(&result)
+	_,err := GetUserByEmail(userId, db)
 	if err != nil{	
 		return true
 	}else{
@@ -31,6 +20,7 @@ func validateEmail(userId string, c *gin.Context) bool {
 	}
 }
 
+// hash password with bcypt
 func hashPassword(password string) ([]byte, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil{
@@ -51,9 +41,8 @@ func validatePassword(password string) bool{
 	return true
 }
 
-func generateRandomToken() []byte{
-	b := make([]byte, 24)
-	rand.Read(b)
+func generateRandomUri() string{
+	b := uniuri.NewLen(64)
 	return b
 }
 
@@ -65,4 +54,10 @@ func abortWithError(c *gin.Context, code int, message string) {
 		"message": message,
 	})
 	c.Abort()
+}
+
+func isTimeStampExpired(timestamp int64) bool{
+	now := time.Now()
+	expireAt := time.Unix(timestamp,0)
+	return expireAt.Before(now)
 }
