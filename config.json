@@ -4,5 +4,9 @@
 			{"Address":"testing@gmail.com", "Password":"testing","Host":"mail.google.com","Port":465},
 			{"Address":"testing@gmail.com", "Password":"testing","Host":"mail.google.com","Port":465}
 		],
-	"Jwtkey":"testing"
+	"Jwtkey":"testing",
+	"Facebook":{
+		"ClientID":"yourid",
+		"ClientSecret":"yoursecret"
+	}
 }

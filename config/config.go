@@ -15,6 +15,8 @@ type Configuration struct{
 	MongoDBUrl 	string
 	Emails		[]Email
 	Jwtkey		string
+
+	Facebook 	FacebookClient
 }
 
 type Email struct{
@@ -22,6 +24,11 @@ type Email struct{
 	Password	string
 	Host		string
 	Port 		int
+}
+
+type FacebookClient struct{
+	ClientID 		string
+	ClientSecret 	string
 }
 
 
@@ -43,6 +50,7 @@ func GetConfig(){
 	// remove the two line below
 	fmt.Println("JWTKey: ",Config.Jwtkey)
 	fmt.Println("Emails: ",Config.Emails)
+	fmt.Println("Facebook:",Config.Facebook.ClientID)
 }
 
 func GetJwtKey() string{
@@ -59,4 +67,12 @@ func GetAnEmail() (Email,error) {
 
 func GetMongoDBUrl() string{
 	return Config.MongoDBUrl
+}
+
+func GetFacebookClientId() string{
+	return Config.Facebook.ClientID
+}
+
+func GetFacebookClientSecret() string {
+	return Config.Facebook.ClientSecret
 }

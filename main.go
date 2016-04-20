@@ -42,7 +42,8 @@ func main() {
 	r.POST("/login", auth.LoginUserWithEmail)
 	r.POST("/signup/email", auth.SignUpWithEmail)
 	r.POST("/signup/email/verify-email", auth.ActivateAccountAfterEmailSignup)
-
+	facebookR := r.Group("facebook")
+	auth.ConfigFacebook(facebookR, Config.GetFacebookClientId(), Config.GetFacebookClientSecret(), "http://localhost:8080/facebook/callback")
 
 	/*
 		api requiring authentication
