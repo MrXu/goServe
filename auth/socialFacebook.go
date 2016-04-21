@@ -58,7 +58,8 @@ func ConfigFacebook(r *gin.RouterGroup, clientId string, secretKey string, redir
 			return
 		}
 		
-		c.JSON(http.StatusOK, *user)
+		//c.JSON(http.StatusOK, *user)
+		c.Redirect(http.StatusFound, "http://localhost:3000/home")
 	})
 
 }
