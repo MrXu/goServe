@@ -77,13 +77,6 @@ func ConfigFacebook(r *gin.RouterGroup, clientId string, secretKey string, redir
 
 }
 
-func Routes(oauth *oauth2.Config, r *gin.RouterGroup) {
-	passportOauth = oauth
-
-	r.GET("/login", func(c *gin.Context) {
-		Login(oauth, c)
-	})
-}
 
 func LoginWithFacebookToken(c *gin.Context) {
 	var fbtoken FacebookToken
@@ -177,30 +170,31 @@ func getProfile(c *gin.Context) {
 func getFBProfile(token string) (*FacebookProfile, error){
 	var userInformation FacebookProfile
 
-	t := token
+	t := &oauth2.Token{AccessToken:token}
+	config := passportOauth
 
 	if t == nil {
-		return userInformation, errors.New("token missing")
+		return &userInformation, errors.New("token missing")
 	} 
 
 	client := config.Client(oauth2.NoContext, t)
 
 	resp, err := client.Get(FacebookProfileUrl)
 	if err != nil {
-		return userInformation, err
+		return &userInformation, err
 	}
 
 	defer resp.Body.Close()
 	contents, readErr := ioutil.ReadAll(resp.Body)
 
 	if readErr != nil {
-		return userInformation, readErr
+		return &userInformation, readErr
 	}
 
 	err = json.Unmarshal(contents, &userInformation)
 	if err != nil {
-		return userInformation, err
+		return &userInformation, err
 	}
 
-	return userInformation, nil
+	return &userInformation, nil
 }
