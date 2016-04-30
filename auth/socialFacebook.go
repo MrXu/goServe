@@ -8,6 +8,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
+
+	"goServe/mongodb"
+	"gopkg.in/mgo.v2"
 )
 
 const SocialFacebook string = "socialFacebook"
@@ -31,6 +34,10 @@ type FacebookProfile struct {
 	} `json:"picture"`
 }
 
+type FacebookToken struct{
+	FBToken 	string `json:"FBToken"`
+}
+
 func ConfigFacebook(r *gin.RouterGroup, clientId string, secretKey string, redirectUrl string) {
 	facebookConfig := &oauth2.Config{
 		// ClientId: FBAppID(string), ClientSecret : FBSecret(string)
@@ -48,6 +55,8 @@ func ConfigFacebook(r *gin.RouterGroup, clientId string, secretKey string, redir
 
 	passportOauth = facebookConfig
 
+
+	// login using redirect
 	r.GET("/login", func(c *gin.Context) {
 		Login(facebookConfig, c)
 	})
@@ -62,6 +71,10 @@ func ConfigFacebook(r *gin.RouterGroup, clientId string, secretKey string, redir
 		c.Redirect(http.StatusFound, "http://localhost:3000/home")
 	})
 
+	// login flow for single page application
+	// only use when applying https
+	r.POST("/login", LoginWithFacebookToken)
+
 }
 
 func Routes(oauth *oauth2.Config, r *gin.RouterGroup) {
@@ -71,6 +84,32 @@ func Routes(oauth *oauth2.Config, r *gin.RouterGroup) {
 		Login(oauth, c)
 	})
 }
+
+func LoginWithFacebookToken(c *gin.Context) {
+	var fbtoken FacebookToken
+	if c.BindJSON(&fbtoken) == nil{
+		fbuser,err := getFBProfile(fbtoken.FBToken)
+		if err == nil && fbuser.Email != ""{
+			var user *UserAccount
+			// db access
+			db := c.MustGet(mongodb.DBMiddlewareName).(*mgo.Database)
+			user, dberr := GetUserByEmail(fbuser.Email, db)
+
+			// if user exists in the db
+			if dberr == nil{
+				tokenString, tokenErr := GenerateToken(user.Id)
+				if tokenErr == nil{
+					c.JSON(http.StatusOK, gin.H{"authenticated":"true","token":tokenString})
+				}
+			}else{	// if new user
+				c.JSON(http.StatusOK, gin.H{"action":"signup","email":fbuser.Email})
+			}
+
+		}
+	}
+	c.JSON(http.StatusUnauthorized, gin.H{"error":"unauthorized"})
+}
+
 
 func Login(oauth *oauth2.Config, c *gin.Context) {
 	url := oauth.AuthCodeURL("")
@@ -133,4 +172,35 @@ func getProfile(c *gin.Context) {
 
 	c.Set(SocialFacebook, &userInformation)
 	c.Next()
+}
+
+func getFBProfile(token string) (*FacebookProfile, error){
+	var userInformation FacebookProfile
+
+	t := token
+
+	if t == nil {
+		return userInformation, errors.New("token missing")
+	} 
+
+	client := config.Client(oauth2.NoContext, t)
+
+	resp, err := client.Get(FacebookProfileUrl)
+	if err != nil {
+		return userInformation, err
+	}
+
+	defer resp.Body.Close()
+	contents, readErr := ioutil.ReadAll(resp.Body)
+
+	if readErr != nil {
+		return userInformation, readErr
+	}
+
+	err = json.Unmarshal(contents, &userInformation)
+	if err != nil {
+		return userInformation, err
+	}
+
+	return userInformation, nil
 }
