@@ -28,10 +28,12 @@ func TokenAuthMiddleware(c *gin.Context) {
 		user, getUserErr := GetUserByEmail(token.Claims[USERID].(string),db)
 		if getUserErr != nil{
 			abortWithError(c, http.StatusUnauthorized, "Invalid User Token")
+			return
 		}
 		c.Set(User, user)
 	}else{
 		abortWithError(c, http.StatusUnauthorized, "Invalid User Token")	
+		return
 	}
 
 	c.Next()
