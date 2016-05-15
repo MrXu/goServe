@@ -23,3 +23,9 @@ Auth supports:
 1. email password
 2. facebook auth 
 
+## Deploy to VPS
+1. install Go and config GOPATH
+2. install Git and clone your project
+3. install Supervisor
+4. build your app into bin 
+5. use Supervisord to keep process running in the background (property “directory” denotes where your app runs from. Thus, keep your JSON config file in this directory)
